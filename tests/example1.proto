@@ -1,4 +1,6 @@
-message Test1 {
+package abcd.example;
+
+message Inner {
     required int32 a = 1;
 }
 

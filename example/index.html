@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>protobuf Test</title>
+	<script type="text/javascript" src="/externs/require.min.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+	require.config({
+		"paths": {
+			"text": "/externs/text",
+			"Math/Long": "/externs/Long",
+			"ByteBuffer": "/externs/ByteBuffer",
+			"ProtoBuf": "/ProtoBuf"
+		}
+	});
+
+	require(["ProtoBuf"], function(ProtoBuf) {
+		var obj = ProtoBuf.protoFromFile('/tests/extend.proto');
+
+		console.log(obj);
+		var formulae = obj.build();
+		console.log(formulae, obj.import(obj.ns));
+		console.log(formulae);
+
+		var a = new formulae.abcd.example.Inner();
+		a.setA(10);
+
+		console.log(a);
+	});
+</script>
+
+</body>
+</html>

@@ -1,5 +1,11 @@
-import "google/protobuf/descriptor.proto";
+package abcd.example.outer;
+import "example1.proto";
 
-extend google.protobuf.MessageOptions {
-  optional int32 foo = 123;
+message Test123 {
+    required int32 a = 0;
+    optional string foo = 1;
+}
+
+extend abcd.example.inner {
+  optional int32 fooBar = 123;
 }

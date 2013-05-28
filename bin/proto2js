@@ -87,6 +87,18 @@ console.log(out);
  * @return {string} JSON representation
  */
 function build_json(defs, min) {
+	if ('extend' in defs && defs.extend.length){
+		defs.extend.forEach(function(ext, index){
+			defs.messages.some(function(msg){
+				if (msg.name == ext.name){
+					msg.fields = msg.fields.concat(ext.fields);
+					delete defs.extend[index];
+					return true;
+				}
+			})
+		});
+		defs.extend.filter(Boolean).length || delete defs.extend;
+	}
     return JSON.stringify(defs, null, min ? 0 : 4);
 }
 

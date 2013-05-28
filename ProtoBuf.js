@@ -566,9 +566,15 @@
                             throw(new Error("Illegal option definition: Must be declared before the first message or enum"));
                         }
                         this._parseOption(topLevel, token);
-                    } else if (token == 'extend' || token == 'service') {
+                    } else if (token == 'extend') {
+	                    var obj = this._parseExtend(topLevel, token);
+	                    console.log(obj);
+						topLevel.extend || (topLevel.extend = []);
+                        topLevel.extend.push(obj);
+                    } else if (token == 'service') {
                         this._parseIgnored(topLevel, token);
-                    } else {
+                    }
+                    else {
                         throw(new Error("Illegal top level declaration: "+token));
                     }
                 } while (true);
@@ -621,6 +627,34 @@
                     throw(new Error("Illegal end of import definition: "+token+" ('"+Lang.END+"' expected)"));
                 }
                 return imported;
+            };
+        
+            /**
+             * Parses an extend definition, keeps token pointer to old token and ignores it.
+             * @param topLevel
+             * @param token
+             * @returns {string}
+             * @private
+             */
+            Parser.prototype._parseExtend = function(topLevel, token) {
+                var stack = this.tn.stack.slice(), // store old pos
+                    index = this.tn.index;
+
+                token = this.tn.next();
+
+                this.tn.stack = stack; // restore from old pos
+                this.tn.index = index;
+
+	            // obj[token] = this._parseMessage(topLevel, token);
+                // now ignore it.
+                // this._parseIgnored(topLevel, 'extend');
+	            /*topLevel.imports.forEach(function(toImport){
+		            console.log('importing ' + __dirname + '/tests/' + toImport);
+		            var p = ProtoBuf.protoFromFile(__dirname + '/tests/' + toImport).build();
+		            console.log(p);
+	            }, this);*/
+
+	            return this._parseMessage(topLevel, 'extend');
             };
         
             /**
@@ -718,7 +752,7 @@
              * @throws {Error} If the message cannot be parsed
              * @private
              */
-            Parser.prototype._parseMessage = function(parent, token) {
+            Parser.prototype._parseMessage = function(parent, token, nopush) {
                 /** @dict */
                 var msg = {}; // Note: At some point we might want to exclude the parser, so we need a dict.
                 token = this.tn.next();
@@ -750,7 +784,7 @@
                         throw(new Error("Illegal token in message "+msg.name+": "+token+" (type or '"+Lang.CLOSE+"' expected)"));
                     }
                 } while (true);
-                parent["messages"].push(msg);
+                nopush || parent["messages"].push(msg);
                 return msg;
             };
         

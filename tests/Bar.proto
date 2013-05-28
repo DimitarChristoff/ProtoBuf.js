@@ -1,0 +1,6 @@
+// Bar.proto
+import "Foo.proto";
+
+extend Bar {
+    required string buzz = 3;
+}

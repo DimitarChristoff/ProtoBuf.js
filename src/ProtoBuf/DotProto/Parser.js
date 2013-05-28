@@ -84,9 +84,13 @@ ProtoBuf.DotProto.Parser = (function(ProtoBuf, Lang, Tokenizer) {
                     throw(new Error("Illegal option definition: Must be declared before the first message or enum"));
                 }
                 this._parseOption(topLevel, token);
-            } else if (token == 'extend' || token == 'service') {
-                this._parseIgnored(topLevel, token);
-            } else {
+            } else if (token == 'extend') {
+                topLevel.extend || (topLevel.extend = []);
+                topLevel.extend.push(this._parseExtend(topLevel, token));
+            } else if (token == 'service') {
+                this._parseExtend(topLevel, token);
+            }
+            else {
                 throw(new Error("Illegal top level declaration: "+token));
             }
         } while (true);
@@ -139,6 +143,27 @@ ProtoBuf.DotProto.Parser = (function(ProtoBuf, Lang, Tokenizer) {
             throw(new Error("Illegal end of import definition: "+token+" ('"+Lang.END+"' expected)"));
         }
         return imported;
+    };
+
+    /**
+     * Parses an extend definition, keeps token pointer to old token and ignores it.
+     * @param topLevel
+     * @param token
+     * @returns {string}
+     * @private
+     */
+    Parser.prototype._parseExtend = function(topLevel, token) {
+        var stack = this.tn.stack.slice(), // store old pos
+            index = this.tn.index;
+
+        token = this.tn.next();
+
+        this.tn.stack = stack; // restore from old pos
+        this.tn.index = index;
+
+        // now ignore it.
+        this._parseIgnored(topLevel, 'extend');
+        return token;
     };
 
     /**

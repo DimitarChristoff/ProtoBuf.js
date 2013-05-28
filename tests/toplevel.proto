@@ -3,6 +3,7 @@ package My;
 enum MyEnum {
     ONE = 1;
     TWO = 2;
+    CODA = 3;
 }
 
 message Test {
