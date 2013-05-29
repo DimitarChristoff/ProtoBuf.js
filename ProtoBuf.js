@@ -654,7 +654,7 @@
 		            console.log(p);
 	            }, this);*/
 
-	            return this._parseMessage(topLevel, 'extend');
+	            return this._parseMessage(topLevel, 'extend', true);
             };
         
             /**
