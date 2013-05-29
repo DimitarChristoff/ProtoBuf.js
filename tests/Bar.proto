@@ -1,0 +1,6 @@
+package Foo;
+import "Foo.proto";
+
+extend Foo {
+    required string buzz = 3;
+}
