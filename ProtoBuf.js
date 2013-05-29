@@ -2528,63 +2528,20 @@
                                 throw(new Error("Failed to import '"+importFilename+"' in '"+filename+"': File not found"));
                             }
                             var parser = new ProtoBuf.DotProto.Parser(proto+"");
-                            this["import"](parser.parse(), importFilename); // Throws on its own                    
-                        }
-                    }
-                }
-                return this;
-            };
-
-            Builder.prototype.extend = function() {
-                if (!!parsed['package']) {
-                    this.define(parsed['package'], parsed["options"]);
-                }
-                if (!!parsed['messages']) {
-                    this.create(parsed['messages']);
-                }
-                this.reset();
-
-                if (!!parsed['package']) {
-                    this.define(parsed['package'], parsed["options"]);
-                }
-                if (!!parsed['enums']) {
-                    this.create(parsed['enums']);
-                }
-                this.reset();
-
-                if (!!parsed['extend'] && parsed['extend'].length > 0) {
-                    /*
-                    if (!filename) {
-                        throw(new Error("Cannot determine import root: File name is unknown"));
-                    }
-                    var importRoot = filename.replace(/[\/\\][^\/\\]*$/, "");
-                    for (var i=0; i<parsed['imports'].length; i++) {
-                        var importFilename = importRoot+"/"+parsed['imports'][i];
-                        if (/\.json$/i.test(importFilename)) { // Always possible
-                            var json = ProtoBuf.Util.fetch(importFilename);
-                            if (json === null) {
-                                throw(new Error("Failed to import '"+importFilename+"' in '"+filename+"': File not found"));
-                            }
-                            this["import"](JSON.parse(json), importFilename); // Throws on its own
-                        } else {
-                            if (/google\/protobuf\//.test(importFilename)) {
-                                // Ignore google/protobuf/descriptor.proto (for example) as it makes use of low-level
-                                // bootstrapping directives that are not required and therefore cannot be parsed by ProtoBuf.js.
-                                continue;
-                            }
-                            var proto = ProtoBuf.Util.fetch(importFilename);
-                            if (proto === null) {
-                                throw(new Error("Failed to import '"+importFilename+"' in '"+filename+"': File not found"));
-                            }
-                            var parser = new ProtoBuf.DotProto.Parser(proto+"");
                             this["import"](parser.parse(), importFilename); // Throws on its own
                         }
-                    }*/
+                    }
                 }
+
+	            if ('extend' in parsed && parsed.extend.length){
+		            for (var e=0; e<parsed.extend.length;e++){
+			            // loop through whats parsed - parsed.messages
+			            //console.info(parsed.extend[e]);
+			            //console.log(this);
+		            }
+	            }
                 return this;
-
             };
-
 
             /**
              * Resolves all namespace objects.

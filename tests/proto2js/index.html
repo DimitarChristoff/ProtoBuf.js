@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>protobuf Test</title>
+	<script type="text/javascript" src="/externs/require.min.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+	require.config({
+		"baseUrl": "/",
+		"paths": {
+			"io": "/externs/socket.io",
+			"text": "/externs/text",
+			"Math/Long": "/externs/Long",
+			"ByteBuffer": "/externs/ByteBuffer",
+			"ProtoBuf": "/ProtoBuf"
+		}
+	});
+
+	define("Foo", ["ProtoBuf"], function(ProtoBuf) {
+		return ProtoBuf.newBuilder().import({
+			"package": null,
+			"messages": [
+				{
+					"name": "Foo",
+					"fields": [
+						{
+							"rule": "optional",
+							"type": "string",
+							"name": "fizz",
+							"id": 1,
+							"options": {}
+						}
+					],
+					"enums": [],
+					"messages": [],
+					"options": {}
+				}
+			],
+			"enums": [],
+			"imports": [],
+			"options": {}
+		}).build("Foo");
+	});
+
+
+
+	require(['Foo', 'ProtoBuf', 'io', 'ByteBuffer'], function(Foo, ProtoBuf, io, ByteBuffer){
+
+		var foo = new Foo('444 and a bottle of rum');
+		var bb = new ByteBuffer(0);
+		foo.encode(bb);
+
+		var socket = io.connect('http://localhost');
+
+		socket.on('data', function(data){
+			//console.log(bb.toHex());
+			//console.log(data);
+			//console.assert(bb.toHex() == data);
+			var decoded = Foo.decode(data);
+			//console.log(decoded);
+			//return;
+			//var b = new ByteBuffer();
+			//bb.wrap(data);
+		});
+		// var foo = Foo.decode('<0A 03 34 34 34 12 07 44 69 6D 69 74 61 72>00 00');
+		// console.log(foo.decode(data));
+
+
+		// console.log(foo, foo.toArrayBuffer());
+	});
+</script>
+
+</body>
+</html>
