@@ -569,7 +569,8 @@
                     } else if (token == 'service') {
                         this._parseIgnoredBlock(topLevel, token);
                     } else if (token == 'extend') {
-                        this._parseExtend(topLevel, token);
+                        topLevel.extend || (topLevel.extend = []);
+                        topLevel.extend.push(this._parseExtend(topLevel, token));
                     }
                     else if (token == 'syntax') {
                         this._parseIgnoredStatement(topLevel, token);
@@ -653,7 +654,7 @@
                     console.log(p);
                 }, this);*/
 
-                return this._parseMessage(topLevel, 'extend');
+                return this._parseMessage(topLevel, 'extend', true);
             };
 
             /**
@@ -767,7 +768,7 @@
              * @throws {Error} If the message cannot be parsed
              * @private
              */
-            Parser.prototype._parseMessage = function(parent, token) {
+            Parser.prototype._parseMessage = function(parent, token, noExport) {
                 /** @dict */
                 var msg = {}; // Note: At some point we might want to exclude the parser, so we need a dict.
                 token = this.tn.next();
@@ -801,7 +802,7 @@
                         throw(new Error("Illegal token in message "+msg.name+": "+token+" (type or '"+Lang.CLOSE+"' expected)"));
                     }
                 } while (true);
-                parent["messages"].push(msg);
+                noExport || parent["messages"].push(msg);
                 return msg;
             };
 
@@ -2533,6 +2534,57 @@
                 }
                 return this;
             };
+
+            Builder.prototype.extend = function() {
+                if (!!parsed['package']) {
+                    this.define(parsed['package'], parsed["options"]);
+                }
+                if (!!parsed['messages']) {
+                    this.create(parsed['messages']);
+                }
+                this.reset();
+
+                if (!!parsed['package']) {
+                    this.define(parsed['package'], parsed["options"]);
+                }
+                if (!!parsed['enums']) {
+                    this.create(parsed['enums']);
+                }
+                this.reset();
+
+                if (!!parsed['extend'] && parsed['extend'].length > 0) {
+                    /*
+                    if (!filename) {
+                        throw(new Error("Cannot determine import root: File name is unknown"));
+                    }
+                    var importRoot = filename.replace(/[\/\\][^\/\\]*$/, "");
+                    for (var i=0; i<parsed['imports'].length; i++) {
+                        var importFilename = importRoot+"/"+parsed['imports'][i];
+                        if (/\.json$/i.test(importFilename)) { // Always possible
+                            var json = ProtoBuf.Util.fetch(importFilename);
+                            if (json === null) {
+                                throw(new Error("Failed to import '"+importFilename+"' in '"+filename+"': File not found"));
+                            }
+                            this["import"](JSON.parse(json), importFilename); // Throws on its own
+                        } else {
+                            if (/google\/protobuf\//.test(importFilename)) {
+                                // Ignore google/protobuf/descriptor.proto (for example) as it makes use of low-level
+                                // bootstrapping directives that are not required and therefore cannot be parsed by ProtoBuf.js.
+                                continue;
+                            }
+                            var proto = ProtoBuf.Util.fetch(importFilename);
+                            if (proto === null) {
+                                throw(new Error("Failed to import '"+importFilename+"' in '"+filename+"': File not found"));
+                            }
+                            var parser = new ProtoBuf.DotProto.Parser(proto+"");
+                            this["import"](parser.parse(), importFilename); // Throws on its own
+                        }
+                    }*/
+                }
+                return this;
+
+            };
+
 
             /**
              * Resolves all namespace objects.
