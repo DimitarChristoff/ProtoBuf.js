@@ -168,10 +168,11 @@
             var b;
             // Wrap Buffer
             if (Buffer && Buffer.isBuffer(buffer)) {
+	            console.info('here');
                 b = new Uint8Array(buffer).buffer; // noop on node <= 0.8
                 buffer = (b === buffer) ? toArrayBuffer(buffer) : b;
             }
-            // Wrap anything that is or contains an ArrayBuffer
+	        // Wrap anything that is or contains an ArrayBuffer
             if (!!buffer["array"]) {
                 buffer = buffer["array"];
             } else if (!!buffer["buffer"]) {

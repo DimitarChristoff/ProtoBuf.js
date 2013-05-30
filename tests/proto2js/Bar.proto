@@ -1,5 +1,4 @@
 import "Foo.proto";
-import "../example1.proto";
 
 extend Foo {
     required string buzz = 3;

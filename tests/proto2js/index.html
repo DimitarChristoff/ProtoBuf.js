@@ -17,15 +17,15 @@
 		}
 	});
 
-	define("Foo", ["ProtoBuf"], function(ProtoBuf) {
+	define('dtos', ['ProtoBuf'], function(ProtoBuf) {
 		return ProtoBuf.newBuilder().import({
 			"package": null,
 			"messages": [
 				{
-					"name": "Foo",
+					"name": 'Foo',
 					"fields": [
 						{
-							"rule": "optional",
+							"rule": "required",
 							"type": "string",
 							"name": "fizz",
 							"id": 1,
@@ -40,29 +40,60 @@
 			"enums": [],
 			"imports": [],
 			"options": {}
-		}).build("Foo");
+		}).import({
+			"package": null,
+			"messages": [],
+			"enums": [],
+			"imports": [],
+			"options": {},
+			"extend": [
+				{
+					"name": "Foo",
+					"fields": [
+						{
+							"rule": "required",
+							"type": "string",
+							"name": "buzz",
+							"id": 3,
+							"options": {}
+						}
+					],
+					"enums": [],
+					"messages": [],
+					"options": {}
+				}
+			]
+		}).build();
 	});
 
 
 
-	require(['Foo', 'ProtoBuf', 'io', 'ByteBuffer'], function(Foo, ProtoBuf, io, ByteBuffer){
+	require(['dtos'], function(dtos){
 
-		var foo = new Foo('444 and a bottle of rum');
-		var bb = new ByteBuffer(0);
-		foo.encode(bb);
+		var foo = new dtos.Foo('444 and a bottle of rum');
 
-		var socket = io.connect('http://localhost');
+		console.log(foo);
+		foo.setFizz('fizz');
+		foo.setBuzz('buzz');
+		console.log(foo);
+		// foo.encode(bb);
 
-		socket.on('data', function(data){
-			//console.log(bb.toHex());
-			//console.log(data);
-			//console.assert(bb.toHex() == data);
-			var decoded = Foo.decode(data);
-			//console.log(decoded);
-			//return;
-			//var b = new ByteBuffer();
-			//bb.wrap(data);
-		});
+		// var socket = io.connect('http://localhost');
+
+//		socket.on('data', function(data){
+//			// console.log(bb);
+//			console.log(data, data instanceof ArrayBuffer); // { }, false
+//			var decoded = Foo.decode(data);
+//			// console.assert(bb.toHex() == data);
+//			var decoded = Foo.decode(data.tab);
+//			console.log(decoded);
+//			return;
+//			var b = new ByteBuffer();
+//			bb.wrap(data);
+//
+//			// var foo = Foo.decode(data);
+//			// console.log(foo);
+//		});
 		// var foo = Foo.decode('<0A 03 34 34 34 12 07 44 69 6D 69 74 61 72>00 00');
 		// console.log(foo.decode(data));
 

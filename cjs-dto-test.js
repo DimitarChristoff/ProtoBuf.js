@@ -35,17 +35,32 @@ var Foo = require('./ProtoBuf').newBuilder().import({
 
 
 
-var foo = new Foo('444 and a bottle of rum');
+var foo = new Foo({
+	fizz: '444 and a bottle of rum'
+});
+
+
 
 
 app.use(express.static(__dirname + '/'));
 
+//var exported = foo.toArrayBuffer(),
+//	buff = '';
+//for (var i = 0; i < exported.byteLength; ++i){
+//	buff += String.fromCharCode(exported[i])
+//}
+
+
+// console.log(foo.toArrayBuffer(), buff);
+
 server.listen(3333);
 
 io.on('connection', function(socket){
-	var bb = new ByteBuffer(0);
-	foo.encode(bb);
-	socket.emit('data', bb.toHex());
+	console.log(foo.toArrayBuffer() instanceof ArrayBuffer);
+	// var b = new Buffer(foo, "utf8");
+	// var bb = new ByteBuffer().wrap(b);
+	// foo.encode(bb);
+	socket.emit('data', foo.toArrayBuffer());
 	// console.log('connected');
 });
 // console.log(bb.toArrayBuffer());

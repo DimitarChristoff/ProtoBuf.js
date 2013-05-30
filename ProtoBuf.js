@@ -292,7 +292,7 @@
             };
 
             return Util;
-        })();        
+        })();
         /**
          * @alias ProtoBuf.Lang
          * @expose
@@ -605,7 +605,7 @@
             /**
              * Parses an import definition.
              * @param {string} token Initial token
-             * @return {string} Import file name 
+             * @return {string} Import file name
              * @throws {Error} If the import definition cannot be parsed
              * @private
              */
@@ -1146,9 +1146,14 @@
              */
             Namespace.prototype.addChild = function(child) {
                 if (this.hasChild(child.name)) {
-                    throw(new Error("Duplicate name in namespace "+this.toString(true)+": "+child.name));
+                    var other = this.getChild(child.name);
+                    other.children = Array.concat(other.children, child.children);
+                    // throw(new Error("Duplicate name in namespace "+this.toString(true)+": "+child.name));
+
                 }
-                this.children.push(child);
+                else {
+                    this.children.push(child);
+                }
             };
 
             /**
@@ -1857,7 +1862,7 @@
                         if (this.options["packed"]) {
                             // "All of the elements of the field are packed into a single key-value pair with wire type 2
                             // (length-delimited). Each element is encoded the same way it would be normally, except without a
-                            // tag preceding it." 
+                            // tag preceding it."
                             buffer.writeVarint32((this.id << 3) | ProtoBuf.WIRE_TYPES.LDELIM);
                             buffer.ensureCapacity(buffer.offset += 1); // We do not know the length yet, so let's assume a varint of length 1
                             var start = buffer.offset; // Remember where the contents begin
@@ -2533,13 +2538,11 @@
                     }
                 }
 
-	            if ('extend' in parsed && parsed.extend.length){
-		            for (var e=0; e<parsed.extend.length;e++){
-			            // loop through whats parsed - parsed.messages
-			            //console.info(parsed.extend[e]);
-			            //console.log(this);
-		            }
-	            }
+                if ('extend' in parsed && parsed.extend.length){
+                    delete parsed.messages;
+                    parsed.messages = parsed.extend;
+                    this['import'](parsed);
+                }
                 return this;
             };
 
