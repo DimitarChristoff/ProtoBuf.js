@@ -637,7 +637,7 @@
              * @private
              */
             Parser.prototype._parseExtend = function(topLevel, token) {
-                var stack = this.tn.stack.slice(), // store old pos
+                /*var stack = this.tn.stack.slice(), // store old pos
                     index = this.tn.index;
 
                 token = this.tn.next();
@@ -648,13 +648,13 @@
                 // obj[token] = this._parseMessage(topLevel, token);
                 // now ignore it.
                 // this._parseIgnored(topLevel, 'extend');
-                /*topLevel.imports.forEach(function(toImport){
+                topLevel.imports.forEach(function(toImport){
                     console.log('importing ' + __dirname + '/tests/' + toImport);
                     var p = ProtoBuf.protoFromFile(__dirname + '/tests/' + toImport).build();
                     console.log(p);
                 }, this);*/
 
-                return this._parseMessage(topLevel, 'extend', true);
+                return this._parseMessage(topLevel, token, true);
             };
 
             /**
@@ -1145,11 +1145,14 @@
              * @expose
              */
             Namespace.prototype.addChild = function(child) {
-                if (this.hasChild(child.name)) {
-                    var other = this.getChild(child.name);
-                    other.children = Array.concat(other.children, child.children);
-                    // throw(new Error("Duplicate name in namespace "+this.toString(true)+": "+child.name));
+                var other;
 
+                if (this.hasChild(child.name)) {
+                    //todo: make this a flag
+                    other = this.getChild(child.name);
+                    other.children = Array.concat(other.children, child.children);
+                    // don't throw. extend'
+                    // throw(new Error("Duplicate name in namespace "+this.toString(true)+": "+child.name));
                 }
                 else {
                     this.children.push(child);
@@ -2538,11 +2541,13 @@
                     }
                 }
 
-                if ('extend' in parsed && parsed.extend.length){
-                    delete parsed.messages;
+                if ('extend' in parsed && parsed.extend.length && !filename) {
+                    // treat extend as a messages key, it will merge if matching name.
                     parsed.messages = parsed.extend;
+                    // delete parsed.extend;
                     this['import'](parsed);
                 }
+
                 return this;
             };
 
