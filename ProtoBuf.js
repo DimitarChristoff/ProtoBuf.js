@@ -1150,7 +1150,7 @@
                 if (this.hasChild(child.name)) {
                     //todo: make this a flag
                     other = this.getChild(child.name);
-                    other.children = Array.concat(other.children, child.children);
+                    other.children = other.children.concat(child.children);
                     // don't throw. extend'
                     // throw(new Error("Duplicate name in namespace "+this.toString(true)+": "+child.name));
                 }

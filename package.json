@@ -25,7 +25,9 @@
     "devDependencies": {
         "testjs": "latest",
         "preprocessor": "latest",
-        "closurecompiler": "latest"
+        "closurecompiler": "latest",
+        "ws": "latest",
+        "express": "latest"
     },
     "license": "Apache-2.0",
     "engines": {

@@ -3,40 +3,66 @@ var express = require('express'),
 	app = express(),
 	http = require('http'),
 	server = http.createServer(app),
-	io = require('socket.io').listen(server),
+	ws = new (require('ws').Server)({server: server}),
 	fs = require('fs'),
 	ByteBuffer = require('bytebuffer');
 
 
 
-var Foo = require('./ProtoBuf').newBuilder().import({
-	"package": null,
-	"messages": [
-		{
-			"name": "Foo",
-			"fields": [
-				{
-					"rule": "required",
-					"type": "string",
-					"name": "fizz",
-					"id": 1,
-					"options": {}
-				}
-			],
-			"enums": [],
-			"messages": [],
-			"options": {}
-		}
-	],
-	"enums": [],
-	"imports": [],
-	"options": {}
-}).build('Foo');
+var DTOs = require('./ProtoBuf').newBuilder().import({
+    "package": null,
+    "messages": [
+        {
+            "name": 'Foo',
+            "fields": [
+                {
+                    "rule": "optional",
+                    "type": "string",
+                    "name": "fizz",
+                    "id": 1,
+                    "options": {}
+                }
+            ],
+            "enums": [],
+            "messages": [],
+            "options": {}
+        }
+    ],
+    "enums": [],
+    "imports": [],
+    "options": {}
+}).import({
+    "package": null,
+    "messages": [],
+    "enums": [],
+    "imports": [],
+    "options": {},
+    "extend": [
+        {
+            "name": "Foo",
+            "fields": [
+                {
+                    "rule": "optional",
+                    "type": "string",
+                    "name": "buzz",
+                    "id": 3,
+                    "options": {}
+                }
+            ],
+            "enums": [],
+            "messages": [],
+            "options": {}
+        }
+    ]
+}).build();
 
 
 
-var foo = new Foo({
-	fizz: '444 and a bottle of rum'
+
+
+var foo = new DTOs.Foo({
+	fizz: 'fizz',
+    buzz: 'buzz'
 });
 
 
@@ -55,12 +81,25 @@ app.use(express.static(__dirname + '/'));
 
 server.listen(3333);
 
-io.on('connection', function(socket){
-	console.log(foo.toArrayBuffer() instanceof ArrayBuffer);
+console.log(foo);
+
+var ab = foo.toArrayBuffer();
+// var bb = new ByteBuffer();
+// foo.encode(bb);
+// console.log(ab);
+// console.log(Buffer.isBuffer(ab));
+
+ws.on('connection', function(ws){
+	// console.log(foo.toArrayBuffer() instanceof ArrayBuffer);
 	// var b = new Buffer(foo, "utf8");
 	// var bb = new ByteBuffer().wrap(b);
 	// foo.encode(bb);
-	socket.emit('data', foo.toArrayBuffer());
+    setInterval(function(){
+        foo.setFizz(new Date().getTime() + Math.random() * 10000);
+        console.log('sending ',  foo);
+        ws.send(foo.encode(), {binary: true, mask: false});
+
+    }, 1000);
 	// console.log('connected');
 });
 // console.log(bb.toArrayBuffer());

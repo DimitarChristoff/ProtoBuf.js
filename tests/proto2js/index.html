@@ -25,7 +25,7 @@
 					"name": 'Foo',
 					"fields": [
 						{
-							"rule": "required",
+							"rule": "optional",
 							"type": "string",
 							"name": "fizz",
 							"id": 1,
@@ -51,7 +51,7 @@
 					"name": "Foo",
 					"fields": [
 						{
-							"rule": "required",
+							"rule": "optional",
 							"type": "string",
 							"name": "buzz",
 							"id": 3,
@@ -70,14 +70,22 @@
 
 	require(['dtos'], function(dtos){
 
-		var foo = new dtos.Foo('444 and a bottle of rum');
+		var foo = new dtos.Foo();
 
-		console.log(foo);
+		// console.log(foo);
 		foo.setFizz('fizz');
 		foo.setBuzz('buzz');
 		console.log(foo);
 		// foo.encode(bb);
 
+
+		var ws = new WebSocket('ws://localhost:3333');
+		ws.binary = true;
+		ws.binaryType = 'arraybuffer';
+		ws.onmessage = function(event) {
+			console.log(event.data);
+			console.log(dtos.Foo.decode(event.data));
+		};
 		// var socket = io.connect('http://localhost');
 
 //		socket.on('data', function(data){
